@@ -4,7 +4,7 @@ function RepositoriesSummary({ repository }) {
   const { stargazers_count, open_issues, forks } = repository;
 
   return (
-    <div className="flex flex-row gap-4 text-gray-700">
+    <div className="flex flex-row gap-4 text-gray-700" data-testid="RepositoriesSummary">
       <div>
         <StarIcon aria-label="stars" size={16} /> {stargazers_count}
       </div>
