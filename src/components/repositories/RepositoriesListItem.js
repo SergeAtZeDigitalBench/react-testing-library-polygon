@@ -6,7 +6,7 @@ function RepositoriesListItem({ repository }) {
   const { full_name, language, description, owner, name } = repository;
 
   return (
-    <div className="py-3 border-b flex">
+    <div className="py-3 border-b flex" data-testid="RepositoriesListItem">
       <FileIcon name={language} className="shrink w-6 pt-1" />
       <div>
         <Link to={`/repositories/${full_name}`} className="text-xl">

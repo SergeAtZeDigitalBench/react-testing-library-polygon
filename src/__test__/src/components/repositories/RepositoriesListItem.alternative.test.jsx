@@ -1,49 +1,35 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import React from 'react'
 
-import RepositoriesSummary from '../../../../components/repositories/RepositoriesSummary'
+import RepositoriesListItem from '../../../../components/repositories/RepositoriesListItem'
 
-describe('RepositoriesSummary', () => {
+/**
+ * AN ALTERNATIVE approach to avoid the act(...) warning while testing the `RepositoriesListItem`:
+ * is to mock the module that causes the trouble - in our case is the `<FileIcon name={language} />`
+ * component that is triggering the Warning due to its async fetching
+ * - we shall mock this component
+ */
+
+jest.mock('../../../../components/tree/FileIcon', () => {
+  return () => 'FileIcon Mock Component'
+})
+
+const renderComponent = (props) => {
+  return render(
+    <MemoryRouter initialEntries={['/']}>
+      <RepositoriesListItem {...props} />
+    </MemoryRouter>,
+  )
+}
+
+describe('RepositoriesListItem', () => {
   const { MOCK_PROPS } = getTestData()
 
   it('should render the component', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByTestId('RepositoriesSummary')
+    renderComponent(MOCK_PROPS)
 
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the stargazers_count', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(MOCK_PROPS.repository.stargazers_count)
-
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the open_issues', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(
-      new RegExp(MOCK_PROPS.repository.open_issues, 'i'),
-    )
-
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the forks', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(
-      new RegExp(`${MOCK_PROPS.repository.forks} Forks`, 'i'),
-    )
-
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the language', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(
-      new RegExp(MOCK_PROPS.repository.language, 'i'),
-    )
-
+    const component = screen.getByTestId('RepositoriesListItem')
     expect(component).toBeInTheDocument()
   })
 })
@@ -181,12 +167,7 @@ function getTestData() {
     score: 1,
   }
 
-  const MOCK_REPOSITORY_NO_LANGUAGE = {
-    ...MOCK_REPOSITORY,
-    language: null,
-  }
   return {
     MOCK_PROPS: { repository: MOCK_REPOSITORY },
-    MOCK_PROPS_NO_LANGUAGE: { repository: MOCK_REPOSITORY_NO_LANGUAGE },
   }
 }

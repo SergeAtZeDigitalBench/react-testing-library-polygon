@@ -1,49 +1,33 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import React from 'react'
 
-import RepositoriesSummary from '../../../../components/repositories/RepositoriesSummary'
+import RepositoriesListItem from '../../../../components/repositories/RepositoriesListItem'
 
-describe('RepositoriesSummary', () => {
+const wait = (timeout = 200) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, timeout)
+  })
+
+const renderComponent = (props) => {
+  return render(
+    <MemoryRouter initialEntries={['/']}>
+      <RepositoriesListItem {...props} />
+    </MemoryRouter>,
+  )
+}
+
+describe('RepositoriesListItem', () => {
   const { MOCK_PROPS } = getTestData()
 
-  it('should render the component', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByTestId('RepositoriesSummary')
+  it('should render the component', async () => {
+    renderComponent(MOCK_PROPS)
 
-    expect(component).toBeInTheDocument()
-  })
+    await screen.findByRole('img', {
+      name: /javascript/i,
+    })
 
-  it('should render the stargazers_count', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(MOCK_PROPS.repository.stargazers_count)
-
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the open_issues', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(
-      new RegExp(MOCK_PROPS.repository.open_issues, 'i'),
-    )
-
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the forks', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(
-      new RegExp(`${MOCK_PROPS.repository.forks} Forks`, 'i'),
-    )
-
-    expect(component).toBeInTheDocument()
-  })
-
-  it('should render the language', () => {
-    render(<RepositoriesSummary {...MOCK_PROPS} />)
-    const component = screen.getByText(
-      new RegExp(MOCK_PROPS.repository.language, 'i'),
-    )
-
+    const component = await screen.findByTestId('RepositoriesListItem')
     expect(component).toBeInTheDocument()
   })
 })
@@ -181,12 +165,7 @@ function getTestData() {
     score: 1,
   }
 
-  const MOCK_REPOSITORY_NO_LANGUAGE = {
-    ...MOCK_REPOSITORY,
-    language: null,
-  }
   return {
     MOCK_PROPS: { repository: MOCK_REPOSITORY },
-    MOCK_PROPS_NO_LANGUAGE: { repository: MOCK_REPOSITORY_NO_LANGUAGE },
   }
 }
