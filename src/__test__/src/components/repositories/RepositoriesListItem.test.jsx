@@ -4,11 +4,6 @@ import React from 'react'
 
 import RepositoriesListItem from '../../../../components/repositories/RepositoriesListItem'
 
-const wait = (timeout = 200) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, timeout)
-  })
-
 const renderComponent = (props) => {
   return render(
     <MemoryRouter initialEntries={['/']}>
@@ -29,6 +24,38 @@ describe('RepositoriesListItem', () => {
 
     const component = await screen.findByTestId('RepositoriesListItem')
     expect(component).toBeInTheDocument()
+  })
+
+  it('should have the expected nav link path value', async () => {
+    renderComponent(MOCK_PROPS)
+
+    await screen.findByRole('img', {
+      name: /javascript/i,
+    })
+
+    const navLink = screen.getByRole('link', {
+      name: new RegExp(MOCK_PROPS.repository.owner.login, 'i'),
+    })
+
+    expect(navLink).toBeInTheDocument()
+    expect(navLink).toHaveAttribute(
+      'href',
+      `/repositories/${MOCK_PROPS.repository.full_name}`,
+    )
+  })
+
+  it('should have the github repository link', async () => {
+    renderComponent(MOCK_PROPS)
+
+    await screen.findByRole('img', {
+      name: /javascript/i,
+    })
+
+    const link = screen.getByRole('link', {
+      name: /github repository/i,
+    })
+
+    expect(link).toHaveAttribute('href', MOCK_PROPS.repository.html_url)
   })
 })
 
